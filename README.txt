@@ -1,3 +1,33 @@
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+
+def generate_circle_template(filename):
+    c = canvas.Canvas(filename, pagesize=(18*inch, 18*inch))
+    center = 9 * inch  # Center of an 18x18" sheet
+    
+    # Starting values based on your image (in inches)
+    r_start = 1.625  # (3.25" diameter / 2)
+    step = 1.0       # Radius increases by 1" (2" diameter) per ring
+    gap = 0.1875     # 3/16" gap for router bit clearance
+    
+    for n in range(1, 7):
+        # Calculate Outer Radius
+        R_outer = (r_start + (n-1) * step) * inch
+        
+        # Draw the Outer Circle
+        c.setDash(1, 0) # Solid line
+        c.circle(center, center, R_outer, stroke=1, fill=0)
+        
+        # Calculate and Draw Inner Radius (if not the first solid disc)
+        if n > 1:
+            R_inner = (r_start + (n-1) * step - (1.0 - gap)) * inch
+            c.setDash(6, 3) # Dashed line to show the "cut" zone
+            c.circle(center, center, R_inner, stroke=1, fill=0)
+            
+    c.showPage()
+    c.save()
+
+generate_circle_template("Circle_Template_Set.pdf")
 #copyright ReportLab Inc. 2000-2010
 #see LICENSE.txt for license details
 
